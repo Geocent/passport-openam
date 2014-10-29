@@ -32,6 +32,7 @@ OpenAM Passport strategy constructor.
 
 * `options` - (Object) A configuration object for the strategy setting necessary options.
     * `openAmBaseUrl` - (String) Base URL for the OpenAM instance with which to authenticate.
+    * `openAmRealm` - (String) Realm for the relevant application. `Default: /`
     * `openAmCookieName` - (String) Cookie name for the OpenAM instance. `Default: iPlanetDirectoryPro`
     * `enableLoginRedirect` - (Boolean) Enable redirecting the user to the OpenAM login page if they are not logged in or their token is invalid. If `false` the strategy will immediately return a `401 Unauthorized` if the user is not logged in of the provided token is invalid. `Default: false`
     * `enableUserProfile` - (Boolean) Enable fetching the user profile from OpenAM. `Default: false`
