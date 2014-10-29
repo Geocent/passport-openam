@@ -134,6 +134,32 @@ app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
      res.json(req.user);
  });
  ```
+
+## Examples
+
+### `examples/simple`
+
+Simple example showing full creation of Express application with passport-openam authentication for several routes.
+
+```
+  Usage: node app.js [options]
+
+  Options:
+
+    -h, --help                output usage information
+    -V, --version             output the version number
+    -p, --port [port number]  interface port to open [3000]
+    -b, --base [base url]     Base URL for the OpenAM instance
+```
+
+## Release Notes
+
+### 0.0.4
+* Updates to include support for headless interfaces such as REST endpoints.
+* Test framework updates.
+* Example update to Express 4 and additional endpoints.
+* Source code documentation and JsLint compliance.
+
 ## Credits
 
   - [Mark Elphinstone-Hoadley](https://github.com/marksyzm)
