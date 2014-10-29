@@ -14,12 +14,126 @@ This development branch is based off of the [original module](https://github.com
 
 ## Installation
 
-    `npm install passport-openam`
+Add the passport-openam module to the `dependencies` section of your project's `package.json` file via the project's Github id:
 
-## Tests
+```
+...
+"dependencies" : {
+    "passport-openam": "Geocent/passport-openam"
+}
+...
+```
 
-    `npm test`
+## API
 
+### OpenAmStrategy(`options`, `verify`)
+
+OpenAM Passport strategy constructor.
+
+* `options` - (Object) A configuration object for the strategy setting necessary options.
+    * `openAmBaseUrl` - (String) Base URL for the OpenAM instance with which to authenticate.
+    * `openAmCookieName` - (String) Cookie name for the OpenAM instance. `Default: iPlanetDirectoryPro`
+    * `enableLoginRedirect` - (Boolean) Enable redirecting the user to the OpenAM login page if they are not logged in or their token is invalid. If `false` the strategy will immediately return a `401 Unauthorized` if the user is not logged in of the provided token is invalid. `Default: false`
+    * `enableUserProfile` - (Boolean) Enable fetching the user profile from OpenAM. `Default: false`
+    * `callbackUrl` - (String) Global callback URL to redirect the user after a successful login with OpenAM. If not present the user will be redirected back to the originating URL.
+* `verify` - (Function(token, profile, done)) Verification callback to execute upon successful verification of the user's OpenAM token.
+
+Example:
+```javascript
+new OpenAmStrategy({
+    openAmBaseUrl: 'http://idp.example.com/OpenAM/',
+    enableLoginRedirect: true,
+    enableUserProfile: true
+  },
+  function(token, profile, done) {
+    return done(null, profile);
+  }
+); // -> [object OpenAmStrategy]
+```
+
+### OpenAmStrategy.strategyName
+
+Static property declaring the name of the strategy.
+
+Example:
+```javascript
+OpenAmStrategy.strategyName; // -> 'openam'
+```
+
+### OpenAmStrategy.ensureAuthenticated(`req`, `res`, `next`)
+
+Static route middleware function to authenticate incoming connections for use with Express routing declarations. This function will skip reauthentication if it detects that the user was previously authenticated with this specific middleware.
+
+* `req` - (Object) Incoming request object.
+* `res` - (Object) Outgoing response object.
+* `next` - (Function(req, res, next)) Next middleware to execute on successful authentication.
+
+Example:
+```javascript
+app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
+  res.json(req.user);
+});
+```
+
+## Usage
+
+1. Once installed into your project as described via the [Installation](#installation) section simply `require` the module's `Strategy` property.
+
+ ```javascript
+ var OpenAmStrategy = require('passport-openam').Strategy;
+ ```
+
+2. If Passport sessions are enabled you can store and retrieve the fetched user profile (if enabled) to and from the session using the Passport `serialize` and `deserialize` functions.
+
+ ```javascript
+ passport.serializeUser(function(user, done) {
+     done(null, user);
+ });
+
+ passport.deserializeUser(function(obj, done) {
+     done(null, obj);
+ });
+ ```
+
+3. Instantiate the `OpenAmStrategy` object with desired options and add it to the passport authentication chain.
+
+ ```javascript
+ passport.use(new OpenAmStrategy({
+       openAmBaseUrl: 'http://idp.example.com/OpenAM/',
+       enableLoginRedirect: true,
+       enableUserProfile: true
+     },
+     function(token, profile, done) {
+       return done(null, profile);
+     }
+ ));
+ ```
+
+4. Ensure that the Passport middleware is initialized and added to the Express middleware chain.
+
+ ```javascript
+ app.use(passport.initialize());
+ app.use(passport.session());
+ ```
+
+5. Utilize the included route middleware to authenticate and protect desired URLs.
+ ```javascript
+ app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
+     res.json(req.user);
+ });
+ ```
+
+ Alternately you can create your own route middleware utilizing the `OpenAmStrategy` authenticator that has been previously added to the Passport authentication chain.
+
+ ```javascript
+ function customRouteMiddleware(req, res, next) {
+     console.log('Authentication attempt logging.');
+     passport.authenticate(OpenAmStrategy.strategyName)(req, res, next);
+ }
+ app.get('/protected', customRouteMiddleware, function (req, res) {
+     res.json(req.user);
+ });
+ ```
 ## Credits
 
   - [Mark Elphinstone-Hoadley](https://github.com/marksyzm)
