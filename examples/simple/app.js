@@ -1,10 +1,17 @@
 var bodyParser      = require('body-parser'),
     cookieParser    = require('cookie-parser'),
+    commander       = require('commander'),
     express         = require('express'),
     session         = require('express-session'),
     morgan          = require('morgan'),
     passport        = require('passport'),
     OpenAmStrategy  = require('../..').Strategy;
+
+commander
+    .version(require('./package.json').version)
+    .option('-p, --port [port number]', 'interface port to open [3000]', 3000)
+    .option('-b, --base [base url]', 'Base URL for the OpenAM instance', 'http://localhost:8080/OpenAM/')
+    .parse(process.argv);
 
 // Passport session setup.
 passport.serializeUser(function(user, done) {
@@ -16,8 +23,10 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // Create OpenAM Passport stategy
+console.info('Creating OpenAM strategy with base URL: %s', commander.base);
+
 passport.use(new OpenAmStrategy({
-    openAmBaseUrl: 'http://localhost:8080/OpenAM-11.0.0/',
+    openAmBaseUrl: commander.base,
     enableLoginRedirect: true,
     enableUserProfile: true
   },
@@ -47,20 +56,22 @@ app.get('/', function (req, res) {
   res.render('index', { user: req.user });
 });
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  else {
-    passport.authenticate('openam')(req, res, next);
-  }
-}
-
 // Protected URL
-app.get('/account', OpenAmStrategy.ensureAuthenticated, function (req, res) {
+app.get('/protected1', OpenAmStrategy.ensureAuthenticated, function (req, res) {
   res.json(req.user);
 });
 
-var server = app.listen(3000, function () {
+//
+function customRouteMiddleware(req, res, next) {
+  console.log('Authentication attempt logging.');
+  passport.authenticate(OpenAmStrategy.strategyName)(req, res, next);
+}
+
+app.get('/protected2', customRouteMiddleware, function (req, res) {
+  res.json(req.user);
+});
+
+var server = app.listen(commander.port, function () {
     console.info('Example application started on port %d.', server.address().port);
+    console.info('Access protected resources at: http://localhost:%d/protected1 and http://localhost:%d/protected2', server.address().port, server.address().port);
 });
