@@ -61,7 +61,7 @@ app.get('/protected1', OpenAmStrategy.ensureAuthenticated, function (req, res) {
   res.json(req.user);
 });
 
-//
+// Custom Protected Url
 function customRouteMiddleware(req, res, next) {
   console.log('Authentication attempt logging.');
   passport.authenticate(OpenAmStrategy.strategyName)(req, res, next);
