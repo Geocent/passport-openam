@@ -1,16 +1,12 @@
-var express = require('express')
-  , passport = require('passport')
-  , util = require('util')
-  , OpenAmStrategy = require('../../lib/passport-openam').Strategy;
-
+var bodyParser      = require('body-parser'),
+    cookieParser    = require('cookie-parser'),
+    express         = require('express'),
+    session         = require('express-session'),
+    morgan          = require('morgan'),
+    passport        = require('passport'),
+    OpenAmStrategy  = require('../..').Strategy;
 
 // Passport session setup.
-// To support persistent login sessions, Passport needs to be able to
-// serialize users into and deserialize users out of the session. Typically,
-// this will be as simple as storing the user ID when serializing, and finding
-// the user by ID when deserializing. However, since this example does not
-// have a database of user records, the complete Facebook profile is serialized
-// and deserialized.
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -19,100 +15,52 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-
-// Use the FacebookStrategy within Passport.
-// Strategies in Passport require a `verify` function, which accept
-// credentials (in this case, an accessToken, refreshToken, and Facebook
-// profile), and invoke a callback with a user object.
+// Create OpenAM Passport stategy
 passport.use(new OpenAmStrategy({
-    callbackUrl: "http://sebasp.alesium.net:3000/auth/openam/callback",
-    openAmBaseUrl: "http://sebasp.alesium.net/openam/"
+    openAmBaseUrl: 'http://localhost:8080/OpenAM-11.0.0/',
+    enableLoginRedirect: true,
+    enableUserProfile: true
   },
   function(token, profile, done) {
-    // asynchronous verification, for effect...
-    process.nextTick(function () {
-      
-      // To keep the example simple, the user's OpenAm profile is returned to
-      // represent the logged-in user. In a typical application, you would want
-      // to associate the OpenAm account with a user record in your database,
-      // and return that user instead.
-      return done(null, profile);
-    });
+    return done(null, profile);
   }
 ));
 
+// Express application setup
+var app = express();
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(session({
+  secret: 'klaatu barada nikto',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(morgan('dev'));
+app.use(passport.initialize());
+app.use(passport.session());
 
-
-
-var app = express.createServer();
-
-// configure Express
-app.configure(function() {
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.logger());
-  app.use(express.cookieParser('session'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.session());
-  // Initialize Passport! Also use passport.session() middleware, to support
-  // persistent login sessions (recommended).
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
-});
-
-
-app.get('/', function(req, res){
+// Unprotected URL
+app.get('/', function (req, res) {
   res.render('index', { user: req.user });
 });
 
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account', { user: req.user });
-});
-
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user });
-});
-
-// GET /auth/openam
-// Use passport.authenticate() as route middleware to authenticate the
-// request. The first step in OpenAm authentication will involve
-// redirecting the user to the loginUiUrl. After authorization, OpenAm will
-// redirect the user back to this application at /auth/openam/callback
-app.get('/auth/openam',
-  passport.authenticate('openam'),
-  function(req, res){
-    // The request will be redirected to Openam for authentication, so this
-    // function will not be called.
-  });
-
-// GET /auth/openam/callback
-// Use passport.authenticate() as route middleware to authenticate the
-// request. If authentication fails, the user will be redirected back to the
-// login page. Otherwise, the primary route function function will be called,
-// which, in this example, will redirect the user to the home page.
-app.get('/auth/openam/callback',
-  passport.authenticate('openam', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-  });
-
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});
-
-app.listen(3000);
-
-
-// Simple route middleware to ensure user is authenticated.
-// Use this route middleware on any resource that needs to be protected. If
-// the request is authenticated (typically via a persistent login session),
-// the request will proceed. Otherwise, the user will be redirected to the
-// login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login')
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  else {
+    passport.authenticate('openam')(req, res, next);
+  }
 }
+
+// Protected URL
+app.get('/account', OpenAmStrategy.ensureAuthenticated, function (req, res) {
+  res.json(req.user);
+});
+
+var server = app.listen(3000, function () {
+    console.info('Example application started on port %d.', server.address().port);
+});

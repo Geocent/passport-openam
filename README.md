@@ -1,34 +1,36 @@
-# Passport-OpenAm
+# Passport-OpenAM
 
-General-purpose OpenAm authentication strategies for [Passport](https://github.com/jaredhanson/passport).
+General-purpose [OpenAM](http://forgerock.com/products/open-identity-stack/openam/) authentication strategies for [Passport](https://github.com/jaredhanson/passport).
 
-This module lets you authenticate using OpenAm in your Node.js applications.
-By plugging into Passport, OpenAm authentication can be easily and unobtrusively
+OpenAM is an open source access management, entitlements and federation server platform.
+
+This module lets you authenticate using OpenAM in your Node.js applications.
+By plugging into Passport, OpenAM authentication can be easily and unobtrusively
 integrated into any application or framework that supports
 [Connect](http://www.senchalabs.org/connect/)-style middleware, including
 [Express](http://expressjs.com/).
 
-OpenAM is an open source access management, entitlements and federation server platform.
+This development branch is based off of the [original module](https://github.com/alesium/passport-openam) developed by [Sebastien Perreault](https://github.com/sperreault) with [fixes](https://github.com/marksyzm/passport-openam) provided by [Mark Elphinstone-Hoadley](https://github.com/marksyzm). The goal of this fork is to provide a more generalized implementation applicable for protecting REST resources.
 
 ## Installation
 
-    $ npm install passport-openam
+    `npm install passport-openam`
 
 ## Tests
 
-    $ npm install --dev
-    $ make test
+    `npm test`
 
 ## Credits
 
-  - [Jared Hanson] (https://github.com/jaredhanson)
-  - [Sebastien Perreault] (https://github.com/sperreault)
+  - [Mark Elphinstone-Hoadley](https://github.com/marksyzm)
+  - [Jared Hanson](https://github.com/jaredhanson)
+  - [Sebastien Perreault](https://github.com/sperreault)
 
 ## License
 
 (The MIT License)
 
-Copyright (c) 2011 Jared Hanson
+Copyright (c) 2014 Geocent
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
