@@ -24,6 +24,7 @@
     "mocha": "1.x"
   },
   "scripts": {
+    "pretest": "jshint **/*.js",
     "test": "mocha -R spec test/test-*.js"
   },
   "keywords": ["passport", "openam", "auth", "authn", "authentication"]
