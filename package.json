@@ -1,7 +1,7 @@
 {
   "name": "passport-openam",
   "description": "OpenAM authentication strategies for Passport.",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "author": "Joshua Penton <joshua.penton@geocent.com> (http://geocent.com/)",
   "contributors": [
     "Sebastien Perreault <sebasp@gmail.com> (http://www.alesium.net/)",

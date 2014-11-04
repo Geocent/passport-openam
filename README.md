@@ -159,6 +159,7 @@ Simple example showing full creation of Express application with passport-openam
 
 ### 0.0.4
 * Updates to include support for headless interfaces such as REST endpoints.
+* Additional logging options for fine grained debugging of authentication failures.
 * Test framework updates.
 * Example update to Express 4 and additional endpoints.
 * Source code documentation and JsLint compliance.
