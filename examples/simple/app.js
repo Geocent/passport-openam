@@ -31,9 +31,9 @@ passport.use(new OpenAmStrategy({
     openAmBaseUrl: commander.base,
     enableLoginRedirect: true,
     enableUserProfile: true,
-    logger: 'error'
+    logger: 'trace'
   },
-  function(token, profile, done) {
+  function(profile, done) {
     return done(null, profile);
   }
 ));
