@@ -1,3 +1,5 @@
+'use strict';
+
 var bodyParser      = require('body-parser'),
     cookieParser    = require('cookie-parser'),
     commander       = require('commander'),
@@ -18,8 +20,8 @@ passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
+passport.deserializeUser(function(user, done) {
+  done(null, user);
 });
 
 // Create OpenAM Passport stategy
@@ -28,7 +30,8 @@ console.info('Creating OpenAM strategy with base URL: %s', commander.base);
 passport.use(new OpenAmStrategy({
     openAmBaseUrl: commander.base,
     enableLoginRedirect: true,
-    enableUserProfile: true
+    enableUserProfile: true,
+    logger: 'error'
   },
   function(token, profile, done) {
     return done(null, profile);

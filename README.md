@@ -37,6 +37,7 @@ OpenAM Passport strategy constructor.
     * `enableLoginRedirect` - (Boolean) Enable redirecting the user to the OpenAM login page if they are not logged in or their token is invalid. If `false` the strategy will immediately return a `401 Unauthorized` if the user is not logged in of the provided token is invalid. `Default: false`
     * `enableUserProfile` - (Boolean) Enable fetching the user profile from OpenAM. `Default: false`
     * `callbackUrl` - (String) Global callback URL to redirect the user after a successful login with OpenAM. If not present the user will be redirected back to the originating URL.
+    * `logger` - (String) Sets the logging level of the [tracer](https://github.com/baryon/tracer) logging mechanism. Supported levels are: `error`, `warn`, `info`, `debug`, `trace`, `log`. `Default: error`
 * `verify` - (Function(token, profile, done)) Verification callback to execute upon successful verification of the user's OpenAM token.
 
 Example:
@@ -44,7 +45,8 @@ Example:
 new OpenAmStrategy({
     openAmBaseUrl: 'http://idp.example.com/OpenAM/',
     enableLoginRedirect: true,
-    enableUserProfile: true
+    enableUserProfile: true,
+    logger: 'debug'
   },
   function(token, profile, done) {
     return done(null, profile);

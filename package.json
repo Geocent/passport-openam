@@ -1,7 +1,7 @@
 {
   "name": "passport-openam",
   "description": "OpenAM authentication strategies for Passport.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Joshua Penton <joshua.penton@geocent.com> (http://geocent.com/)",
   "contributors": [
     "Sebastien Perreault <sebasp@gmail.com> (http://www.alesium.net/)",
@@ -16,9 +16,10 @@
   },
   "main": "./lib/passport-openam",
   "dependencies": {
-    "pkginfo": "0.2.x",
+    "openam": ">=0.0.1",
     "passport": ">=0.1.1",
-    "openam": ">=0.0.1"
+    "pkginfo": "0.2.x",
+    "tracer": "0.7.x"
   },
   "devDependencies": {
     "mocha": "1.x"
