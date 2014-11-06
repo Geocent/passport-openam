@@ -6,10 +6,11 @@
     "dependencies": {
         "body-parser": "1.x",
         "cookie-parser": "1.x",
-        "commander": "2.x",        
+        "commander": "2.x",
         "express": "4.x",
         "express-session": "1.x",
         "morgan": "1.x",
-        "passport": "0.2.x"
+        "passport": "0.2.x",
+        "jade": "*"
     }
 }

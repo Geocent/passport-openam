@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+  head
+    title passport-openam example (#{pageTitle})
+  body
+    h1= pageTitle
+
+    if links
+        ul
+            each link in links
+                li
+                    a(href=link)= link
+
+    if attributes
+        h3 Attributes
+        pre= JSON.stringify(attributes, undefined, 2)

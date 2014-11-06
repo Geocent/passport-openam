@@ -7,7 +7,7 @@ var bodyParser      = require('body-parser'),
     session         = require('express-session'),
     morgan          = require('morgan'),
     passport        = require('passport'),
-    OpenAmStrategy  = require('../..').Strategy;
+    OpenAmStrategy  = require('..').Strategy;
 
 commander
     .version(require('./package.json').version)
@@ -30,11 +30,11 @@ console.info('Creating OpenAM strategy with base URL: %s', commander.base);
 passport.use(new OpenAmStrategy({
     openAmBaseUrl: commander.base,
     enableLoginRedirect: true,
-    enableUserProfile: true,
+    enableUserAttributes: true,
     logger: 'trace'
   },
-  function(profile, done) {
-    return done(null, profile);
+  function(attributes, done) {
+    return done(null, attributes);
   }
 ));
 
@@ -53,25 +53,37 @@ app.use(session({
 app.use(morgan('dev'));
 app.use(passport.initialize());
 app.use(passport.session());
+app.set('view engine', 'jade');
+
+app.locals.pageTitle = 'simple';
 
 // Unprotected URL
 app.get('/', function (req, res) {
-  res.render('index', { user: req.user });
+  res.render('response', {
+      links: [
+        '/protected1',
+        '/protected2'
+      ]
+  });
 });
 
 // Protected URL
 app.get('/protected1', OpenAmStrategy.ensureAuthenticated, function (req, res) {
-  res.json(req.user);
+  res.render('response', {
+      attributes: req.user
+  });
 });
 
 // Custom Protected Url
 function customRouteMiddleware(req, res, next) {
-  console.log('Authentication attempt logging.');
+  console.info('Authentication attempt logging.');
   passport.authenticate(OpenAmStrategy.strategyName)(req, res, next);
 }
 
 app.get('/protected2', customRouteMiddleware, function (req, res) {
-  res.json(req.user);
+  res.render('response', {
+      attributes: req.user
+  });
 });
 
 var server = app.listen(commander.port, function () {

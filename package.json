@@ -1,6 +1,6 @@
 {
   "name": "passport-openam",
-  "description": "OpenAM authentication strategies for Passport.",
+  "description": "OpenAM cookie-based authentication strategy for Passport.",
   "version": "0.0.4",
   "author": "Joshua Penton <joshua.penton@geocent.com> (http://geocent.com/)",
   "contributors": [
@@ -16,9 +16,8 @@
   },
   "main": "./lib/passport-openam",
   "dependencies": {
-    "openam": ">=0.0.1",
-    "passport": ">=0.1.1",
-    "pkginfo": "0.2.x",
+    "openam": "0.0.x",
+    "passport": "0.2.x",
     "tracer": "0.7.x"
   },
   "devDependencies": {
@@ -28,5 +27,5 @@
     "pretest": "jshint **/*.js",
     "test": "mocha -R spec test/test-*.js"
   },
-  "keywords": ["passport", "openam", "auth", "authn", "authentication"]
+  "keywords": ["passport", "openam", "strategy", "authentication", "cookie"]
 }

@@ -1,16 +1,12 @@
 # Passport-OpenAM
 
-General-purpose [OpenAM](http://forgerock.com/products/open-identity-stack/openam/) authentication strategies for [Passport](https://github.com/jaredhanson/passport).
+[OpenAM](http://forgerock.com/products/open-identity-stack/openam/) authentication strategy for [Passport](https://github.com/jaredhanson/passport).
 
 OpenAM is an open source access management, entitlements and federation server platform.
 
-This module lets you authenticate using OpenAM in your Node.js applications.
-By plugging into Passport, OpenAM authentication can be easily and unobtrusively
-integrated into any application or framework that supports
-[Connect](http://www.senchalabs.org/connect/)-style middleware, including
-[Express](http://expressjs.com/).
+This module lets you utilize OpenAM cookie-based authentication in your Node.js applications when used in conjunction with [Passport](https://github.com/jaredhanson/passport).
 
-This development branch is based off of the [original module](https://github.com/alesium/passport-openam) developed by [Sebastien Perreault](https://github.com/sperreault) with [fixes](https://github.com/marksyzm/passport-openam) provided by [Mark Elphinstone-Hoadley](https://github.com/marksyzm). The goal of this fork is to provide a more generalized implementation applicable for protecting REST resources.
+This module was inspired by [passport-openam](https://github.com/alesium/passport-openam) developed by [Sebastien Perreault](https://github.com/sperreault) with [fixes](https://github.com/marksyzm/passport-openam) provided by [Mark Elphinstone-Hoadley](https://github.com/marksyzm). The goal of this module's development is to provide a more generalized implementation applicable for protecting both Web and REST resources.
 
 ## Installation
 
@@ -31,25 +27,26 @@ Add the passport-openam module to the `dependencies` section of your project's `
 OpenAM Passport strategy constructor.
 
 * `options` - (Object) A configuration object for the strategy setting necessary options.
+    * `name` - (String) Alternate Passport identifiable name for strategy.  `Default: openam`
     * `openAmBaseUrl` - (String) Base URL for the OpenAM instance with which to authenticate.
     * `openAmRealm` - (String) Realm for the relevant application. `Default: /`
     * `openAmCookieName` - (String) Cookie name for the OpenAM instance. `Default: iPlanetDirectoryPro`
     * `enableLoginRedirect` - (Boolean) Enable redirecting the user to the OpenAM login page if they are not logged in or their token is invalid. If `false` the strategy will immediately return a `401 Unauthorized` if the user is not logged in of the provided token is invalid. `Default: false`
-    * `enableUserProfile` - (Boolean) Enable fetching the user profile from OpenAM. `Default: false`
+    * `enableUserAttributes` - (Boolean) Enable fetching the user attributes from OpenAM. `Default: false`
     * `callbackUrl` - (String) Global callback URL to redirect the user after a successful login with OpenAM. If not present the user will be redirected back to the originating URL.
-    * `logger` - (String) Sets the logging level of the [tracer](https://github.com/baryon/tracer) logging mechanism. Supported levels are: `error`, `warn`, `info`, `debug`, `trace`, `log`. `Default: error`
-* `verify` - (Function(token, profile, done)) Verification callback to execute upon successful verification of the user's OpenAM token.
+    * `logger` - (String/Object) Sets the logging level of the [tracer](https://github.com/baryon/tracer) logging mechanism. Supported levels are: `error`, `warn`, `info`, `debug`, `trace`, `log`. Alternately a preconfigured custom logging object that supports the `error()`, `warn()`, `info()`, `debug()`, `trace()`, and `log()` functions can also be provided. `Default: error`
+* `verify` - (Function(attributes, done)) Verification callback to execute upon successful verification of the user's OpenAM token.
 
 Example:
 ```javascript
 new OpenAmStrategy({
     openAmBaseUrl: 'http://idp.example.com/OpenAM/',
     enableLoginRedirect: true,
-    enableUserProfile: true,
+    enableUserAttributes: true,
     logger: 'debug'
   },
-  function(token, profile, done) {
-    return done(null, profile);
+  function(attributes, done) {
+    return done(null, attributes);
   }
 ); // -> [object OpenAmStrategy]
 ```
@@ -86,7 +83,7 @@ app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
  var OpenAmStrategy = require('passport-openam').Strategy;
  ```
 
-2. If Passport sessions are enabled you can store and retrieve the fetched user profile (if enabled) to and from the session using the Passport `serialize` and `deserialize` functions.
+2. If Passport sessions are enabled you can store and retrieve the fetched user attributes (if enabled) to and from the session using the Passport `serialize` and `deserialize` functions.
 
  ```javascript
  passport.serializeUser(function(user, done) {
@@ -104,10 +101,10 @@ app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
  passport.use(new OpenAmStrategy({
        openAmBaseUrl: 'http://idp.example.com/OpenAM/',
        enableLoginRedirect: true,
-       enableUserProfile: true
+       enableUserAttributes: true
      },
-     function(token, profile, done) {
-       return done(null, profile);
+     function(attributes, done) {
+       return done(null, attributes);
      }
  ));
  ```
@@ -140,10 +137,6 @@ app.get('/protected', OpenAmStrategy.ensureAuthenticated, function (req, res) {
 
 ## Examples
 
-### `examples/simple`
-
-Simple example showing full creation of Express application with passport-openam authentication for several routes.
-
 ```
   Usage: node app.js [options]
 
@@ -154,6 +147,15 @@ Simple example showing full creation of Express application with passport-openam
     -p, --port [port number]  interface port to open [3000]
     -b, --base [base url]     Base URL for the OpenAM instance
 ```
+
+### `examples/simple.js`
+
+Simple example showing full creation of Express application with passport-openam authentication for several routes.
+
+### `examples/multiple.js`
+
+Example showing creation of multiple `OpenAmStrategy` objects with differing configurations within the same application. Also demonstrates custom logging configurations.
+
 
 ## Release Notes
 
