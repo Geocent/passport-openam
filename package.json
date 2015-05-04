@@ -16,7 +16,7 @@
   },
   "main": "./lib/passport-openam",
   "dependencies": {
-    "openam": "0.0.x",
+    "openam": "https://github.com/JonathanFu/node-openam",
     "passport": "0.2.x",
     "tracer": "0.7.x"
   },
